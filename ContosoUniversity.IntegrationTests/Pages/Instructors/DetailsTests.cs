@@ -39,9 +39,9 @@ public class DetailsTests
             HireDate = DateTime.Today,
             SelectedCourses = new[] { english101.Id.ToString() }
         };
-        var instructorId = await _fixture.SendAsync(command);
+        var instructorId = await _fixture.ProcessAsync(command);
 
-        var result = await _fixture.SendAsync(new Details.Query { Id = instructorId });
+        var result = await _fixture.ProcessAsync(new Details.Query { Id = instructorId });
 
         result.ShouldNotBeNull();
         result.FirstMidName.ShouldBe(command.FirstMidName);

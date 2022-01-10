@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -10,21 +10,21 @@ namespace ContosoUniversity.Pages.Courses;
 
 public class Create : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly ICommandProcessor _commandProcessor;
 
-    public Create(IMediator mediator) => _mediator = mediator;
+    public Create(ICommandProcessor commandProcessor) => _commandProcessor = commandProcessor;
 
     [BindProperty]
     public Command Data { get; set; }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        await _mediator.Send(Data);
+        await _commandProcessor.ProcessAsync(Data);
 
         return this.RedirectToPageJson("Index");
     }
 
-    public record Command : IRequest<int>
+    public record Command : ICommand<int>
     {
         public int Number { get; init; }
         public string Title { get; init; }
@@ -32,13 +32,13 @@ public class Create : PageModel
         public Department Department { get; init; }
     }
 
-    public class Handler : IRequestHandler<Command, int>
+    public class Handler : ICommandHandler<Command, int>
     {
         private readonly SchoolContext _db;
 
         public Handler(SchoolContext db) => _db = db;
 
-        public async Task<int> Handle(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(Command message, CancellationToken token)
         {
             var course = new Course
             {

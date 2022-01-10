@@ -24,14 +24,14 @@ public class EditTests
             EnrollmentDate = DateTime.Today
         };
 
-        var studentId = await _fixture.SendAsync(cmd);
+        var studentId = await _fixture.ProcessAsync(cmd);
 
         var query = new Edit.Query
         {
             Id = studentId
         };
 
-        var result = await _fixture.SendAsync(query);
+        var result = await _fixture.ProcessAsync(query);
 
         result.FirstMidName.ShouldBe(cmd.FirstMidName);
         result.LastName.ShouldBe(cmd.LastName);
@@ -48,7 +48,7 @@ public class EditTests
             EnrollmentDate = DateTime.Today
         };
 
-        var studentId = await _fixture.SendAsync(createCommand);
+        var studentId = await _fixture.ProcessAsync(createCommand);
 
         var editCommand = new Edit.Command
         {
@@ -58,7 +58,7 @@ public class EditTests
             EnrollmentDate = DateTime.Today.AddYears(-1)
         };
 
-        await _fixture.SendAsync(editCommand);
+        await _fixture.ProcessAsync(editCommand);
 
         var student = await _fixture.FindAsync<Student>(studentId);
 

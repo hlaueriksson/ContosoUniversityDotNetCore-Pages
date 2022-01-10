@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,32 +18,37 @@ namespace ContosoUniversity.Pages.Instructors;
 
 public class CreateEdit : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly ICommandProcessor _commandProcessor;
+    private readonly IQueryProcessor _queryProcessor;
 
     [BindProperty]
     public Command Data { get; set; }
 
-    public CreateEdit(IMediator mediator) => _mediator = mediator;
+    public CreateEdit(ICommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+    {
+        _commandProcessor = commandProcessor;
+        _queryProcessor = queryProcessor;
+    }
 
-    public async Task OnGetCreateAsync() => Data = await _mediator.Send(new Query());
+    public async Task OnGetCreateAsync() => Data = await _queryProcessor.ProcessAsync(new Query());
 
     public async Task<IActionResult> OnPostCreateAsync()
     {
-        await _mediator.Send(Data);
+        await _commandProcessor.ProcessAsync(Data);
 
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public async Task OnGetEditAsync(Query query) => Data = await _mediator.Send(query);
+    public async Task OnGetEditAsync(Query query) => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<IActionResult> OnPostEditAsync()
     {
-        await _mediator.Send(Data);
+        await _commandProcessor.ProcessAsync(Data);
 
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IRequest<Command>
+    public record Query : IQuery<Command>
     {
         public int? Id { get; init; }
     }
@@ -56,7 +61,7 @@ public class CreateEdit : PageModel
         }
     }
 
-    public record Command : IRequest<int>
+    public record Command : ICommand<int>
     {
         public Command()
         {
@@ -116,7 +121,7 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class QueryHandler : IRequestHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<Query, Command>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -127,7 +132,7 @@ public class CreateEdit : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> Handle(Query message, CancellationToken token)
+        public async Task<Command> HandleAsync(Query message, CancellationToken token)
         {
             Command model;
             if (message.Id == null)
@@ -156,13 +161,13 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class CommandHandler : IRequestHandler<Command, int>
+    public class CommandHandler : ICommandHandler<Command, int>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task<int> Handle(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(Command message, CancellationToken token)
         {
             Instructor instructor;
             if (message.Id == null)

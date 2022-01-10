@@ -19,7 +19,7 @@ public class IndexTests
     [Fact]
     public async Task Should_list_departments()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -45,7 +45,7 @@ public class IndexTests
 
         var query = new Index.Query();
 
-        var result = await _fixture.SendAsync(query);
+        var result = await _fixture.ProcessAsync(query);
 
         result.ShouldNotBeNull();
         result.Count.ShouldBeGreaterThanOrEqualTo(2);

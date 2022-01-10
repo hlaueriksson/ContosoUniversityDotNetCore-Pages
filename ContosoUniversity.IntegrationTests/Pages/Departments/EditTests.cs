@@ -20,7 +20,7 @@ public class EditTests
     [Fact]
     public async Task Should_get_edit_department_details()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -41,7 +41,7 @@ public class EditTests
             Id = dept.Id
         };
 
-        var result = await _fixture.SendAsync(query);
+        var result = await _fixture.ProcessAsync(query);
 
         result.ShouldNotBeNull();
         result.Name.ShouldBe(dept.Name);
@@ -51,14 +51,14 @@ public class EditTests
     [Fact]
     public async Task Should_edit_department()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
             HireDate = DateTime.Today
         });
 
-        var admin2Id = await _fixture.SendAsync(new CreateEdit.Command
+        var admin2Id = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -75,7 +75,7 @@ public class EditTests
         await _fixture.InsertAsync(dept);
 
         Edit.Command command = null;
-        await _fixture.ExecuteDbContextAsync(async (ctxt, mediator) =>
+        await _fixture.ExecuteDbContextAsync(async (ctxt, processor) =>
         {
             var admin2 = await _fixture.FindAsync<Instructor>(admin2Id);
 
@@ -88,7 +88,7 @@ public class EditTests
                 Budget = 456m
             };
 
-            await mediator.Send(command);
+            await processor.ProcessAsync(command);
         });
 
         var result = await _fixture.ExecuteDbContextAsync(db => db.Departments.Where(d => d.Id == dept.Id).Include(d => d.Administrator).SingleOrDefaultAsync());

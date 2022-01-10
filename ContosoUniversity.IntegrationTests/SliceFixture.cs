@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -98,8 +98,8 @@ public class SliceFixture : IAsyncLifetime
     public Task ExecuteDbContextAsync(Func<SchoolContext, ValueTask> action) 
         => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()).AsTask());
 
-    public Task ExecuteDbContextAsync(Func<SchoolContext, IMediator, Task> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<IMediator>()));
+    public Task ExecuteDbContextAsync(Func<SchoolContext, ICommandProcessor, Task> action) 
+        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<ICommandProcessor>()));
 
     public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, Task<T>> action) 
         => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()));
@@ -107,8 +107,8 @@ public class SliceFixture : IAsyncLifetime
     public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, ValueTask<T>> action) 
         => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()).AsTask());
 
-    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, IMediator, Task<T>> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<IMediator>()));
+    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, ICommandProcessor, Task<T>> action) 
+        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<ICommandProcessor>()));
 
     public Task InsertAsync<T>(params T[] entities) where T : class
     {
@@ -183,23 +183,33 @@ public class SliceFixture : IAsyncLifetime
         return ExecuteDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
     }
 
-    public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
+    public Task<TResponse> ProcessAsync<TResponse>(ICommand<TResponse> request)
     {
         return ExecuteScopeAsync(sp =>
         {
-            var mediator = sp.GetRequiredService<IMediator>();
+            var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
 
-            return mediator.Send(request);
+            return commandProcessor.ProcessAsync(request);
         });
     }
 
-    public Task SendAsync(IRequest request)
+    public Task ProcessAsync(ICommand request)
     {
         return ExecuteScopeAsync(sp =>
         {
-            var mediator = sp.GetRequiredService<IMediator>();
+            var commandProcessor = sp.GetRequiredService<ICommandProcessor>();
 
-            return mediator.Send(request);
+            return commandProcessor.ProcessAsync(request);
+        });
+    }
+
+    public Task<TResponse> ProcessAsync<TResponse>(IQuery<TResponse> request)
+    {
+        return ExecuteScopeAsync(sp =>
+        {
+            var queryProcessor = sp.GetRequiredService<IQueryProcessor>();
+
+            return queryProcessor.ProcessAsync(request);
         });
     }
 

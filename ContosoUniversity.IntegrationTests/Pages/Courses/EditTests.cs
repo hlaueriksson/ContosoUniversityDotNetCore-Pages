@@ -18,7 +18,7 @@ public class EditTests
     [Fact]
     public async Task Should_query_for_command()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -42,7 +42,7 @@ public class EditTests
         };
         await _fixture.InsertAsync(dept, course);
 
-        var result = await _fixture.SendAsync(new Edit.Query { Id = course.Id });
+        var result = await _fixture.ProcessAsync(new Edit.Query { Id = course.Id });
 
         result.ShouldNotBeNull();
         result.Credits.ShouldBe(course.Credits);
@@ -53,7 +53,7 @@ public class EditTests
     [Fact]
     public async Task Should_edit()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -86,7 +86,7 @@ public class EditTests
 
         Edit.Command command = default;
 
-        await _fixture.ExecuteDbContextAsync(async (ctxt, mediator) =>
+        await _fixture.ExecuteDbContextAsync(async (ctxt, processor) =>
         {
             command = new Edit.Command
             {
@@ -96,7 +96,7 @@ public class EditTests
                 Department = await ctxt.Departments.FindAsync(newDept.Id)
             };
 
-            await mediator.Send(command);
+            await processor.ProcessAsync(command);
         });
 
         var edited = await _fixture.FindAsync<Course>(course.Id);

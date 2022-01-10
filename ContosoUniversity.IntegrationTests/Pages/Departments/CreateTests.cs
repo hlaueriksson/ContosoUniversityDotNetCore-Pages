@@ -20,7 +20,7 @@ public class CreateTests
     [Fact]
     public async Task Should_create_new_department()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -29,7 +29,7 @@ public class CreateTests
 
         Create.Command command = null;
 
-        await _fixture.ExecuteDbContextAsync(async (db, mediator) =>
+        await _fixture.ExecuteDbContextAsync(async (db, processor) =>
         {
             var admin = await db.Instructors.FindAsync(adminId);
 
@@ -41,7 +41,7 @@ public class CreateTests
                 Administrator = admin
             };
 
-            await mediator.Send(command);
+            await processor.ProcessAsync(command);
         });
 
         var created = await _fixture.ExecuteDbContextAsync(db => db.Departments.Where(d => d.Name == command.Name).SingleOrDefaultAsync());

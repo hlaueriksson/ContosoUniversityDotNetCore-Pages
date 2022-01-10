@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -63,17 +63,17 @@ namespace ContosoUniversity.Pages.Instructors;
 
 public class Index : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public Index(IMediator mediator) 
-        => _mediator = mediator;
+    public Index(IQueryProcessor queryProcessor) 
+        => _queryProcessor = queryProcessor;
 
     public Model Data { get; private set; }
 
     public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+        => Data = await _queryProcessor.ProcessAsync(query);
 
-    public record Query : IRequest<Model>
+    public record Query : IQuery<Model>
     {
         public int? Id { get; init; }
         public int? CourseId { get; init; }
@@ -139,7 +139,7 @@ public class Index : PageModel
         }
     }
 
-    public class Handler : IRequestHandler<Query, Model>
+    public class Handler : IQueryHandler<Query, Model>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -150,7 +150,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Model> Handle(Query message, CancellationToken token)
+        public async Task<Model> HandleAsync(Query message, CancellationToken token)
         {
             var instructors = await _db.Instructors
                     .Include(i => i.CourseAssignments)

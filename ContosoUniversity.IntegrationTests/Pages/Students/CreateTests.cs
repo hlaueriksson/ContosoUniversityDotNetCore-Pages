@@ -24,7 +24,7 @@ public class CreateTests
             EnrollmentDate = DateTime.Today
         };
 
-        var studentId = await _fixture.SendAsync(cmd);
+        var studentId = await _fixture.ProcessAsync(cmd);
 
         var student = await _fixture.FindAsync<Student>(studentId);
 

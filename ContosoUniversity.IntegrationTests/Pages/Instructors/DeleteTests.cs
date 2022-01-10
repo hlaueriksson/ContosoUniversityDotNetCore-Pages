@@ -39,11 +39,11 @@ public class DeleteTests
             HireDate = DateTime.Today,
             SelectedCourses = new []{ english101.Id.ToString()}
         };
-        var instructorId = await _fixture.SendAsync(command);
+        var instructorId = await _fixture.ProcessAsync(command);
 
         await _fixture.InsertAsync(englishDept, english101);
 
-        var result = await _fixture.SendAsync(new Delete.Query { Id = instructorId });
+        var result = await _fixture.ProcessAsync(new Delete.Query { Id = instructorId });
 
         result.ShouldNotBeNull();
         result.FirstMidName.ShouldBe(command.FirstMidName);
@@ -53,7 +53,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_delete_instructor()
     {
-        var instructorId = await _fixture.SendAsync(new CreateEdit.Command
+        var instructorId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -76,7 +76,7 @@ public class DeleteTests
 
         await _fixture.InsertAsync(englishDept, english101);
 
-        await _fixture.SendAsync(new CreateEdit.Command
+        await _fixture.ProcessAsync(new CreateEdit.Command
         {
             Id = instructorId,
             FirstMidName = "George",
@@ -86,7 +86,7 @@ public class DeleteTests
             SelectedCourses = new[] { english101.Id.ToString() }
         });
 
-        await _fixture.SendAsync(new Delete.Command { Id = instructorId });
+        await _fixture.ProcessAsync(new Delete.Command { Id = instructorId });
 
         var instructorCount = await _fixture.ExecuteDbContextAsync(db => db.Instructors.Where(i => i.Id == instructorId).CountAsync());
 

@@ -36,7 +36,7 @@ public class IndexTests
 
         var query = new Index.Query{CurrentFilter = lastName };
 
-        var result = await _fixture.SendAsync(query);
+        var result = await _fixture.ProcessAsync(query);
 
         result.Results.Count.ShouldBeGreaterThanOrEqualTo(2);
         result.Results.Select(r => r.Id).ShouldContain(student1.Id);
@@ -64,7 +64,7 @@ public class IndexTests
 
         var query = new Index.Query{CurrentFilter = lastName, SortOrder = "name_desc" };
 
-        var result = await _fixture.SendAsync(query);
+        var result = await _fixture.ProcessAsync(query);
 
         result.Results.Count.ShouldBe(2);
         result.Results[0].Id.ShouldBe(student1.Id);

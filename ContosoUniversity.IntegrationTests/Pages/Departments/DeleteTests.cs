@@ -20,7 +20,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_delete_department()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -42,7 +42,7 @@ public class DeleteTests
             RowVersion = dept.RowVersion
         };
 
-        await _fixture.SendAsync(command);
+        await _fixture.ProcessAsync(command);
 
         var any = await _fixture.ExecuteDbContextAsync(db => db.Departments.Where(d => d.Id == command.Id).AnyAsync());
 

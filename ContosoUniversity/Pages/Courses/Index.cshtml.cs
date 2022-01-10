@@ -3,24 +3,24 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ContosoUniversity.Pages.Courses;
 
 public class Index : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public Index(IMediator mediator) => _mediator = mediator;
+    public Index(IQueryProcessor queryProcessor) => _queryProcessor = queryProcessor;
 
     public Result Data { get; private set; }
 
-    public async Task OnGetAsync() => Data = await _mediator.Send(new Query());
+    public async Task OnGetAsync() => Data = await _queryProcessor.ProcessAsync(new Query());
 
-    public record Query : IRequest<Result>
+    public record Query : IQuery<Result>
     {
     }
 
@@ -42,7 +42,7 @@ public class Index : PageModel
         public MappingProfile() => CreateProjection<Course, Result.Course>();
     }
 
-    public class Handler : IRequestHandler<Query, Result>
+    public class Handler : IQueryHandler<Query, Result>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -53,7 +53,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Result> Handle(Query message, CancellationToken token)
+        public async Task<Result> HandleAsync(Query message, CancellationToken token)
         {
             var courses = await _db.Courses
                 .OrderBy(d => d.Id)

@@ -50,7 +50,7 @@ public class CreateEditTests
             SelectedCourses = new [] {english101.Id.ToString(), english201.Id.ToString()}
         };
 
-        var id = await _fixture.SendAsync(command);
+        var id = await _fixture.ProcessAsync(command);
 
         var created = await _fixture.ExecuteDbContextAsync(db => db.Instructors.Where(i => i.Id == id).Include(i => i.CourseAssignments).Include(i => i.OfficeAssignment).SingleOrDefaultAsync());
 
@@ -87,7 +87,7 @@ public class CreateEditTests
 
         await _fixture.InsertAsync(englishDept, english101, english201);
 
-        var instructorId = await _fixture.SendAsync(new CreateEdit.Command
+        var instructorId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -105,7 +105,7 @@ public class CreateEditTests
             Id = instructorId
         };
 
-        await _fixture.SendAsync(command);
+        await _fixture.ProcessAsync(command);
 
         var edited = await _fixture.ExecuteDbContextAsync(db => db.Instructors.Where(i => i.Id == instructorId).Include(i => i.CourseAssignments).Include(i => i.OfficeAssignment).SingleOrDefaultAsync());
 
@@ -140,7 +140,7 @@ public class CreateEditTests
         };
         await _fixture.InsertAsync(englishDept, english101, english201);
 
-        var instructorId = await _fixture.SendAsync(new CreateEdit.Command
+        var instructorId = await _fixture.ProcessAsync(new CreateEdit.Command
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -159,7 +159,7 @@ public class CreateEditTests
             Id = instructorId
         };
 
-        await _fixture.SendAsync(command);
+        await _fixture.ProcessAsync(command);
 
         var edited = await _fixture.ExecuteDbContextAsync(db => db.Instructors.Where(i => i.Id == instructorId).Include(i => i.CourseAssignments).Include(i => i.OfficeAssignment).SingleOrDefaultAsync());
 

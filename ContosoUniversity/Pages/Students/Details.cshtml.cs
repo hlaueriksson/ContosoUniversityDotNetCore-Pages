@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +16,16 @@ namespace ContosoUniversity.Pages.Students;
 
 public class Details : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public Details(IMediator mediator) => _mediator = mediator;
+    public Details(IQueryProcessor queryProcessor) => _queryProcessor = queryProcessor;
 
     public Model Data { get; private set; }
 
     public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+        => Data = await _queryProcessor.ProcessAsync(query);
 
-    public record Query : IRequest<Model>
+    public record Query : IQuery<Model>
     {
         public int Id { get; init; }
     }
@@ -55,7 +55,7 @@ public class Details : PageModel
         }
     }
 
-    public class Handler : IRequestHandler<Query, Model>
+    public class Handler : IQueryHandler<Query, Model>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -66,7 +66,7 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> Handle(Query message, CancellationToken token) => _db
+        public Task<Model> HandleAsync(Query message, CancellationToken token) => _db
             .Students
             .Where(s => s.Id == message.Id)
             .ProjectTo<Model>(_configuration)

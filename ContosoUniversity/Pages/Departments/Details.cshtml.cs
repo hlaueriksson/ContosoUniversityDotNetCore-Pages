@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using DelegateDecompiler.EntityFrameworkCore;
-using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +16,16 @@ namespace ContosoUniversity.Pages.Departments;
 
 public class Details : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly IQueryProcessor _queryProcessor;
 
     public Model Data { get; private set; }
 
-    public Details(IMediator mediator) => _mediator = mediator;
+    public Details(IQueryProcessor queryProcessor) => _queryProcessor = queryProcessor;
 
     public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+        => Data = await _queryProcessor.ProcessAsync(query);
 
-    public record Query : IRequest<Model>
+    public record Query : IQuery<Model>
     {
         public int Id { get; init; }
     }
@@ -49,7 +49,7 @@ public class Details : PageModel
         public MappingProfile() => CreateProjection<Department, Model>();
     }
         
-    public class QueryHandler : IRequestHandler<Query, Model>
+    public class QueryHandler : IQueryHandler<Query, Model>
     {
         private readonly SchoolContext _context;
         private readonly IConfigurationProvider _configuration;
@@ -60,7 +60,7 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> Handle(Query message, 
+        public Task<Model> HandleAsync(Query message, 
             CancellationToken token) => 
             _context.Departments
                 .Where(m => m.Id == message.Id)

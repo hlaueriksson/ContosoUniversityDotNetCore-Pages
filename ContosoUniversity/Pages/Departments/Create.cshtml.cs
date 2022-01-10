@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading;
 using System.Threading.Tasks;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -14,16 +14,16 @@ namespace ContosoUniversity.Pages.Departments;
 
 public class Create : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly ICommandProcessor _commandProcessor;
 
     [BindProperty]
     public Command Data { get; set; }
 
-    public Create(IMediator mediator) => _mediator = mediator;
+    public Create(ICommandProcessor commandProcessor) => _commandProcessor = commandProcessor;
 
     public async Task<ActionResult> OnPostAsync()
     {
-        await _mediator.Send(Data);
+        await _commandProcessor.ProcessAsync(Data);
 
         return this.RedirectToPageJson("Index");
     }
@@ -39,7 +39,7 @@ public class Create : PageModel
         }
     }
 
-    public record Command : IRequest<int>
+    public record Command : ICommand<int>
     {
         [StringLength(50, MinimumLength = 3)]
         public string Name { get; init; }
@@ -55,13 +55,13 @@ public class Create : PageModel
         public Instructor Administrator { get; init; }
     }
 
-    public class CommandHandler : IRequestHandler<Command, int>
+    public class CommandHandler : ICommandHandler<Command, int>
     {
         private readonly SchoolContext _context;
 
         public CommandHandler(SchoolContext context) => _context = context;
 
-        public async Task<int> Handle(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(Command message, CancellationToken token)
         {
             var department = new Department
             {

@@ -24,14 +24,14 @@ public class DeleteTests
             EnrollmentDate = DateTime.Today
         };
 
-        var studentId = await _fixture.SendAsync(cmd);
+        var studentId = await _fixture.ProcessAsync(cmd);
 
         var query = new Delete.Query
         {
             Id = studentId
         };
 
-        var result = await _fixture.SendAsync(query);
+        var result = await _fixture.ProcessAsync(query);
 
         result.FirstMidName.ShouldBe(cmd.FirstMidName);
         result.LastName.ShouldBe(cmd.LastName);
@@ -48,14 +48,14 @@ public class DeleteTests
             EnrollmentDate = DateTime.Today
         };
 
-        var studentId = await _fixture.SendAsync(createCommand);
+        var studentId = await _fixture.ProcessAsync(createCommand);
 
         var deleteCommand = new Delete.Command
         {
             Id = studentId
         };
 
-        await _fixture.SendAsync(deleteCommand);
+        await _fixture.ProcessAsync(deleteCommand);
 
         var student = await _fixture.FindAsync<Student>(studentId);
 

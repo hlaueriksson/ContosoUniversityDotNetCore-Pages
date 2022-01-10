@@ -5,26 +5,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ContosoUniversity.Pages.Students;
 
 public class Index : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public Index(IMediator mediator) => _mediator = mediator;
+    public Index(IQueryProcessor queryProcessor) => _queryProcessor = queryProcessor;
 
     public Result Data { get; private set; }
 
     public async Task OnGetAsync(string sortOrder,
         string currentFilter, string searchString, int? pageIndex)
-        => Data = await _mediator.Send(new Query { CurrentFilter = currentFilter, Page = pageIndex, SearchString = searchString, SortOrder = sortOrder});
+        => Data = await _queryProcessor.ProcessAsync(new Query { CurrentFilter = currentFilter, Page = pageIndex, SearchString = searchString, SortOrder = sortOrder});
 
-    public record Query : IRequest<Result>
+    public record Query : IQuery<Result>
     {
         public string SortOrder { get; init; }
         public string CurrentFilter { get; init; }
@@ -58,7 +58,7 @@ public class Index : PageModel
         public MappingProfile() => CreateProjection<Student, Model>();
     }
 
-    public class QueryHandler : IRequestHandler<Query, Result>
+    public class QueryHandler : IQueryHandler<Query, Result>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -69,7 +69,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Result> Handle(Query message, CancellationToken token)
+        public async Task<Result> HandleAsync(Query message, CancellationToken token)
         {
             var searchString = message.SearchString ?? message.CurrentFilter;
 

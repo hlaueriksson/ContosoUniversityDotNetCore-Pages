@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -17,24 +17,29 @@ namespace ContosoUniversity.Pages.Instructors;
 
 public class Delete : PageModel
 {
-    private readonly IMediator _mediator;
+    private readonly ICommandProcessor _commandProcessor;
+    private readonly IQueryProcessor _queryProcessor;
 
-    public Delete(IMediator mediator) => _mediator = mediator;
+    public Delete(ICommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+    {
+        _commandProcessor = commandProcessor;
+        _queryProcessor = queryProcessor;
+    }
 
     [BindProperty]
     public Command Data { get; set; }
 
     public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+        => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<ActionResult> OnPostAsync()
     {
-        await _mediator.Send(Data);
+        await _commandProcessor.ProcessAsync(Data);
 
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IRequest<Command>
+    public record Query : IQuery<Command>
     {
         public int? Id { get; init; }
     }
@@ -47,7 +52,7 @@ public class Delete : PageModel
         }
     }
 
-    public record Command : IRequest
+    public record Command : ICommand
     {
         public int? Id { get; init; }
 
@@ -67,7 +72,7 @@ public class Delete : PageModel
         public MappingProfile() => CreateProjection<Instructor, Command>();
     }
 
-    public class QueryHandler : IRequestHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<Query, Command>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -78,20 +83,20 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public Task<Command> Handle(Query message, CancellationToken token) => _db
+        public Task<Command> HandleAsync(Query message, CancellationToken token) => _db
             .Instructors
             .Where(i => i.Id == message.Id)
             .ProjectTo<Command>(_configuration)
             .SingleOrDefaultAsync(token);
     }
 
-    public class CommandHandler : IRequestHandler<Command>
+    public class CommandHandler : ICommandHandler<Command>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task<Unit> Handle(Command message, CancellationToken token)
+        public async Task HandleAsync(Command message, CancellationToken token)
         {
             var instructor = await _db.Instructors
                 .Include(i => i.OfficeAssignment)
@@ -109,8 +114,6 @@ public class Delete : PageModel
             {
                 department.InstructorId = null;
             }
-
-            return default;
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using ContosoUniversity.Data;
+﻿using CommandQuery.DependencyInjection;
+using ContosoUniversity.Data;
 using ContosoUniversity.Infrastructure;
 using ContosoUniversity.Infrastructure.Tags;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HtmlTags;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,7 +32,8 @@ static void RegisterServices(WebApplicationBuilder builder)
 
     services.AddAutoMapper(typeof(Program));
 
-    services.AddMediatR(typeof(Program));
+    services.AddCommands(typeof(Program).Assembly);
+    services.AddQueries(typeof(Program).Assembly);
 
     services.AddHtmlTags(new TagConventions());
 
