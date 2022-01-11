@@ -34,7 +34,7 @@ public class IndexTests
         };
         await _fixture.InsertAsync(student1, student2);
 
-        var query = new Index.Query{CurrentFilter = lastName };
+        var query = new Index.StudentIndexQuery{CurrentFilter = lastName };
 
         var result = await _fixture.ProcessAsync(query);
 
@@ -62,7 +62,7 @@ public class IndexTests
         };
         await _fixture.InsertAsync(student1, student2);
 
-        var query = new Index.Query{CurrentFilter = lastName, SortOrder = "name_desc" };
+        var query = new Index.StudentIndexQuery{CurrentFilter = lastName, SortOrder = "name_desc" };
 
         var result = await _fixture.ProcessAsync(query);
 

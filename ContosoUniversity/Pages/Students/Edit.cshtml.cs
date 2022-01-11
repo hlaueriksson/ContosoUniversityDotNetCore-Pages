@@ -27,9 +27,9 @@ public class Edit : PageModel
     }
 
     [BindProperty]
-    public Command Data { get; set; }
+    public StudentEditCommand Data { get; set; }
 
-    public async Task OnGetAsync(Query query)
+    public async Task OnGetAsync(StudentEditQuery query)
         => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<IActionResult> OnPostAsync()
@@ -39,12 +39,12 @@ public class Edit : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IQuery<Command>
+    public record StudentEditQuery : IQuery<StudentEditCommand>
     {
         public int? Id { get; init; }
     }
 
-    public class QueryValidator : AbstractValidator<Query>
+    public class QueryValidator : AbstractValidator<StudentEditQuery>
     {
         public QueryValidator()
         {
@@ -52,7 +52,7 @@ public class Edit : PageModel
         }
     }
 
-    public record Command : ICommand
+    public record StudentEditCommand : ICommand
     {
         public int Id { get; init; }
         public string LastName { get; init; }
@@ -63,7 +63,7 @@ public class Edit : PageModel
         public DateTime? EnrollmentDate { get; init; }
     }
 
-    public class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<StudentEditCommand>
     {
         public Validator()
         {
@@ -75,10 +75,10 @@ public class Edit : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() => CreateProjection<Student, Command>();
+        public MappingProfile() => CreateProjection<Student, StudentEditCommand>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<StudentEditQuery, StudentEditCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -89,19 +89,19 @@ public class Edit : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> HandleAsync(Query message, CancellationToken token) => await _db.Students
+        public async Task<StudentEditCommand> HandleAsync(StudentEditQuery message, CancellationToken token) => await _db.Students
             .Where(s => s.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
+            .ProjectTo<StudentEditCommand>(_configuration)
             .SingleOrDefaultAsync(token);
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : ICommandHandler<StudentEditCommand>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task HandleAsync(Command message, CancellationToken token)
+        public async Task HandleAsync(StudentEditCommand message, CancellationToken token)
         {
             var student = await _db.Students.FindAsync(message.Id);
 

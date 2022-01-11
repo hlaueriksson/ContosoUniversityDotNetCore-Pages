@@ -17,7 +17,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_get_delete_details()
     {
-        var cmd = new Create.Command
+        var cmd = new Create.StudentCreateCommand
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
@@ -26,7 +26,7 @@ public class DeleteTests
 
         var studentId = await _fixture.ProcessAsync(cmd);
 
-        var query = new Delete.Query
+        var query = new Delete.StudentDeleteQuery
         {
             Id = studentId
         };
@@ -41,7 +41,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_delete_student()
     {
-        var createCommand = new Create.Command
+        var createCommand = new Create.StudentCreateCommand
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
@@ -50,7 +50,7 @@ public class DeleteTests
 
         var studentId = await _fixture.ProcessAsync(createCommand);
 
-        var deleteCommand = new Delete.Command
+        var deleteCommand = new Delete.StudentDeleteCommand
         {
             Id = studentId
         };

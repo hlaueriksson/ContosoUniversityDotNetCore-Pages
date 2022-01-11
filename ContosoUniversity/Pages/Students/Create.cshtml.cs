@@ -18,9 +18,9 @@ public class Create : PageModel
     public Create(ICommandProcessor commandProcessor) => _commandProcessor = commandProcessor;
 
     [BindProperty]
-    public Command Data { get; set; }
+    public StudentCreateCommand Data { get; set; }
 
-    public void OnGet() => Data = new Command();
+    public void OnGet() => Data = new StudentCreateCommand();
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -29,7 +29,7 @@ public class Create : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Command : ICommand<int>
+    public record StudentCreateCommand : ICommand<int>
     {
         public string LastName { get; init; }
 
@@ -39,7 +39,7 @@ public class Create : PageModel
         public DateTime? EnrollmentDate { get; init; }
     }
 
-    public class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<StudentCreateCommand>
     {
         public Validator()
         {
@@ -49,13 +49,13 @@ public class Create : PageModel
         }
     }
 
-    public class Handler : ICommandHandler<Command, int>
+    public class Handler : ICommandHandler<StudentCreateCommand, int>
     {
         private readonly SchoolContext _db;
 
         public Handler(SchoolContext db) => _db = db;
 
-        public async Task<int> HandleAsync(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(StudentCreateCommand message, CancellationToken token)
         {
             var student = new Student
             {

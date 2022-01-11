@@ -18,7 +18,7 @@ public class DetailsTests
     [Fact]
     public async Task Should_query_for_details()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -43,7 +43,7 @@ public class DetailsTests
 
         await _fixture.InsertAsync(dept, course);
 
-        var result = await _fixture.ProcessAsync(new Details.Query { Id = course.Id });
+        var result = await _fixture.ProcessAsync(new Details.CourseDetailsQuery { Id = course.Id });
 
         result.ShouldNotBeNull();
         result.Credits.ShouldBe(course.Credits);

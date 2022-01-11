@@ -22,10 +22,10 @@ public class Details : PageModel
 
     public Details(IQueryProcessor queryProcessor) => _queryProcessor = queryProcessor;
 
-    public async Task OnGetAsync(Query query)
+    public async Task OnGetAsync(DepartmentDetailsQuery query)
         => Data = await _queryProcessor.ProcessAsync(query);
 
-    public record Query : IQuery<Model>
+    public record DepartmentDetailsQuery : IQuery<Model>
     {
         public int Id { get; init; }
     }
@@ -49,7 +49,7 @@ public class Details : PageModel
         public MappingProfile() => CreateProjection<Department, Model>();
     }
         
-    public class QueryHandler : IQueryHandler<Query, Model>
+    public class QueryHandler : IQueryHandler<DepartmentDetailsQuery, Model>
     {
         private readonly SchoolContext _context;
         private readonly IConfigurationProvider _configuration;
@@ -60,7 +60,7 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> HandleAsync(Query message, 
+        public Task<Model> HandleAsync(DepartmentDetailsQuery message, 
             CancellationToken token) => 
             _context.Departments
                 .Where(m => m.Id == message.Id)

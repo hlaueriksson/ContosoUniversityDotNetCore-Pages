@@ -17,7 +17,7 @@ public class Create : PageModel
     private readonly ICommandProcessor _commandProcessor;
 
     [BindProperty]
-    public Command Data { get; set; }
+    public DepartmentCreateCommand Data { get; set; }
 
     public Create(ICommandProcessor commandProcessor) => _commandProcessor = commandProcessor;
 
@@ -28,7 +28,7 @@ public class Create : PageModel
         return this.RedirectToPageJson("Index");
     }
 
-    public class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<DepartmentCreateCommand>
     {
         public Validator()
         {
@@ -39,7 +39,7 @@ public class Create : PageModel
         }
     }
 
-    public record Command : ICommand<int>
+    public record DepartmentCreateCommand : ICommand<int>
     {
         [StringLength(50, MinimumLength = 3)]
         public string Name { get; init; }
@@ -55,13 +55,13 @@ public class Create : PageModel
         public Instructor Administrator { get; init; }
     }
 
-    public class CommandHandler : ICommandHandler<Command, int>
+    public class CommandHandler : ICommandHandler<DepartmentCreateCommand, int>
     {
         private readonly SchoolContext _context;
 
         public CommandHandler(SchoolContext context) => _context = context;
 
-        public async Task<int> HandleAsync(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(DepartmentCreateCommand message, CancellationToken token)
         {
             var department = new Department
             {

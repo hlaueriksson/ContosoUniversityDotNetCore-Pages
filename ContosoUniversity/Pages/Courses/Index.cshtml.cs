@@ -18,9 +18,9 @@ public class Index : PageModel
 
     public Result Data { get; private set; }
 
-    public async Task OnGetAsync() => Data = await _queryProcessor.ProcessAsync(new Query());
+    public async Task OnGetAsync() => Data = await _queryProcessor.ProcessAsync(new CourseIndexQuery());
 
-    public record Query : IQuery<Result>
+    public record CourseIndexQuery : IQuery<Result>
     {
     }
 
@@ -42,7 +42,7 @@ public class Index : PageModel
         public MappingProfile() => CreateProjection<Course, Result.Course>();
     }
 
-    public class Handler : IQueryHandler<Query, Result>
+    public class Handler : IQueryHandler<CourseIndexQuery, Result>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -53,7 +53,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Result> HandleAsync(Query message, CancellationToken token)
+        public async Task<Result> HandleAsync(CourseIndexQuery message, CancellationToken token)
         {
             var courses = await _db.Courses
                 .OrderBy(d => d.Id)

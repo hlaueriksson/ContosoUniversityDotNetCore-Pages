@@ -26,9 +26,9 @@ public class Delete : PageModel
     }
 
     [BindProperty]
-    public Command Data { get; set; }
+    public DepartmentDeleteCommand Data { get; set; }
 
-    public async Task OnGetAsync(Query query)
+    public async Task OnGetAsync(DepartmentDeleteQuery query)
         => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<ActionResult> OnPostAsync()
@@ -38,12 +38,12 @@ public class Delete : PageModel
         return this.RedirectToPageJson("Index");
     }
 
-    public record Query : IQuery<Command>
+    public record DepartmentDeleteQuery : IQuery<DepartmentDeleteCommand>
     {
         public int Id { get; init; }
     }
 
-    public record Command : ICommand
+    public record DepartmentDeleteCommand : ICommand
     {
         public string Name { get; init; }
 
@@ -61,10 +61,10 @@ public class Delete : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() => CreateProjection<Department, Command>();
+        public MappingProfile() => CreateProjection<Department, DepartmentDeleteCommand>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<DepartmentDeleteQuery, DepartmentDeleteCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -75,20 +75,20 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> HandleAsync(Query message, CancellationToken token) => await _db
+        public async Task<DepartmentDeleteCommand> HandleAsync(DepartmentDeleteQuery message, CancellationToken token) => await _db
             .Departments
             .Where(d => d.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
+            .ProjectTo<DepartmentDeleteCommand>(_configuration)
             .SingleOrDefaultAsync(token);
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : ICommandHandler<DepartmentDeleteCommand>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task HandleAsync(Command message, CancellationToken token)
+        public async Task HandleAsync(DepartmentDeleteCommand message, CancellationToken token)
         {
             var department = await _db.Departments.FindAsync(message.Id);
 

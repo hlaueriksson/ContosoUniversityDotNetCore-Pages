@@ -17,7 +17,7 @@ public class EditTests
     [Fact]
     public async Task Should_get_edit_details()
     {
-        var cmd = new Create.Command
+        var cmd = new Create.StudentCreateCommand
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
@@ -26,7 +26,7 @@ public class EditTests
 
         var studentId = await _fixture.ProcessAsync(cmd);
 
-        var query = new Edit.Query
+        var query = new Edit.StudentEditQuery
         {
             Id = studentId
         };
@@ -41,7 +41,7 @@ public class EditTests
     [Fact]
     public async Task Should_edit_student()
     {
-        var createCommand = new Create.Command
+        var createCommand = new Create.StudentCreateCommand
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
@@ -50,7 +50,7 @@ public class EditTests
 
         var studentId = await _fixture.ProcessAsync(createCommand);
 
-        var editCommand = new Edit.Command
+        var editCommand = new Edit.StudentEditCommand
         {
             Id = studentId,
             FirstMidName = "Mary",

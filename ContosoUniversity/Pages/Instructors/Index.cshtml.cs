@@ -70,10 +70,10 @@ public class Index : PageModel
 
     public Model Data { get; private set; }
 
-    public async Task OnGetAsync(Query query)
+    public async Task OnGetAsync(InstructorIndexQuery query)
         => Data = await _queryProcessor.ProcessAsync(query);
 
-    public record Query : IQuery<Model>
+    public record InstructorIndexQuery : IQuery<Model>
     {
         public int? Id { get; init; }
         public int? CourseId { get; init; }
@@ -139,7 +139,7 @@ public class Index : PageModel
         }
     }
 
-    public class Handler : IQueryHandler<Query, Model>
+    public class Handler : IQueryHandler<InstructorIndexQuery, Model>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -150,7 +150,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Model> HandleAsync(Query message, CancellationToken token)
+        public async Task<Model> HandleAsync(InstructorIndexQuery message, CancellationToken token)
         {
             var instructors = await _db.Instructors
                     .Include(i => i.CourseAssignments)

@@ -41,7 +41,7 @@ public class IndexTests
 
         await _fixture.InsertAsync(englishDept, english101, english201);
 
-        var instructor1Id = await _fixture.ProcessAsync(new CreateEdit.Command
+        var instructor1Id = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -50,7 +50,7 @@ public class IndexTests
             OfficeAssignmentLocation = "Austin"
         });
 
-        var instructor2Id = await _fixture.ProcessAsync(new CreateEdit.Command
+        var instructor2Id = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             OfficeAssignmentLocation = "Houston",
             FirstMidName = "Jerry",
@@ -78,7 +78,7 @@ public class IndexTests
 
         await _fixture.InsertAsync(enrollment1, enrollment2);
 
-        var result = await _fixture.ProcessAsync(new Index.Query { Id = instructor1Id, CourseId = english101.Id });
+        var result = await _fixture.ProcessAsync(new Index.InstructorIndexQuery { Id = instructor1Id, CourseId = english101.Id });
 
         result.ShouldNotBeNull();
 

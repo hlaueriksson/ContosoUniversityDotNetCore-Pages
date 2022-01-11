@@ -22,9 +22,9 @@ public class Index : PageModel
 
     public async Task OnGetAsync(string sortOrder,
         string currentFilter, string searchString, int? pageIndex)
-        => Data = await _queryProcessor.ProcessAsync(new Query { CurrentFilter = currentFilter, Page = pageIndex, SearchString = searchString, SortOrder = sortOrder});
+        => Data = await _queryProcessor.ProcessAsync(new StudentIndexQuery { CurrentFilter = currentFilter, Page = pageIndex, SearchString = searchString, SortOrder = sortOrder});
 
-    public record Query : IQuery<Result>
+    public record StudentIndexQuery : IQuery<Result>
     {
         public string SortOrder { get; init; }
         public string CurrentFilter { get; init; }
@@ -58,7 +58,7 @@ public class Index : PageModel
         public MappingProfile() => CreateProjection<Student, Model>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, Result>
+    public class QueryHandler : IQueryHandler<StudentIndexQuery, Result>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -69,7 +69,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Result> HandleAsync(Query message, CancellationToken token)
+        public async Task<Result> HandleAsync(StudentIndexQuery message, CancellationToken token)
         {
             var searchString = message.SearchString ?? message.CurrentFilter;
 

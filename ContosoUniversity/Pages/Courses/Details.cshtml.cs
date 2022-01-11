@@ -21,14 +21,14 @@ public class Details : PageModel
 
     public Model Data { get; private set; }
 
-    public async Task OnGetAsync(Query query) => Data = await _queryProcessor.ProcessAsync(query);
+    public async Task OnGetAsync(CourseDetailsQuery query) => Data = await _queryProcessor.ProcessAsync(query);
 
-    public record Query : IQuery<Model>
+    public record CourseDetailsQuery : IQuery<Model>
     {
         public int? Id { get; init; }
     }
 
-    public class Validator : AbstractValidator<Query>
+    public class Validator : AbstractValidator<CourseDetailsQuery>
     {
         public Validator()
         {
@@ -50,7 +50,7 @@ public class Details : PageModel
         public MappingProfile() => CreateProjection<Course, Model>();
     }
 
-    public class Handler : IQueryHandler<Query, Model>
+    public class Handler : IQueryHandler<CourseDetailsQuery, Model>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -61,7 +61,7 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> HandleAsync(Query message, CancellationToken token) => 
+        public Task<Model> HandleAsync(CourseDetailsQuery message, CancellationToken token) => 
             _db.Courses
                 .Where(i => i.Id == message.Id)
                 .ProjectTo<Model>(_configuration)

@@ -20,20 +20,20 @@ public class CreateTests
     [Fact]
     public async Task Should_create_new_department()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
             HireDate = DateTime.Today
         });
 
-        Create.Command command = null;
+        Create.DepartmentCreateCommand command = null;
 
         await _fixture.ExecuteDbContextAsync(async (db, processor) =>
         {
             var admin = await db.Instructors.FindAsync(adminId);
 
-            command = new Create.Command
+            command = new Create.DepartmentCreateCommand
             {
                 Budget = 10m,
                 Name = "Engineering",

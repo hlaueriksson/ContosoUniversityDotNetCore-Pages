@@ -20,7 +20,7 @@ public class EditTests
     [Fact]
     public async Task Should_get_edit_department_details()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -36,7 +36,7 @@ public class EditTests
         };
         await _fixture.InsertAsync(dept);
 
-        var query = new Edit.Query
+        var query = new Edit.DepartmentEditQuery
         {
             Id = dept.Id
         };
@@ -51,14 +51,14 @@ public class EditTests
     [Fact]
     public async Task Should_edit_department()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
             HireDate = DateTime.Today
         });
 
-        var admin2Id = await _fixture.ProcessAsync(new CreateEdit.Command
+        var admin2Id = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -74,12 +74,12 @@ public class EditTests
         };
         await _fixture.InsertAsync(dept);
 
-        Edit.Command command = null;
+        Edit.DepartmentEditCommand command = null;
         await _fixture.ExecuteDbContextAsync(async (ctxt, processor) =>
         {
             var admin2 = await _fixture.FindAsync<Instructor>(admin2Id);
 
-            command = new Edit.Command
+            command = new Edit.DepartmentEditCommand
             {
                 Id = dept.Id,
                 Name = "English",

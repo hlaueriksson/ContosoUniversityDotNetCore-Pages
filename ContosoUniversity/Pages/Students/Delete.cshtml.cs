@@ -26,9 +26,9 @@ public class Delete : PageModel
     }
 
     [BindProperty]
-    public Command Data { get; set; }
+    public StudentDeleteCommand Data { get; set; }
 
-    public async Task OnGetAsync(Query query) => Data = await _queryProcessor.ProcessAsync(query);
+    public async Task OnGetAsync(StudentDeleteQuery query) => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -37,12 +37,12 @@ public class Delete : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IQuery<Command>
+    public record StudentDeleteQuery : IQuery<StudentDeleteCommand>
     {
         public int Id { get; init; }
     }
 
-    public record Command : ICommand
+    public record StudentDeleteCommand : ICommand
     {
         public int Id { get; init; }
         [Display(Name = "First Name")]
@@ -53,10 +53,10 @@ public class Delete : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() => CreateProjection<Student, Command>();
+        public MappingProfile() => CreateProjection<Student, StudentDeleteCommand>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<StudentDeleteQuery, StudentDeleteCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -67,20 +67,20 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> HandleAsync(Query message, CancellationToken token) => await _db
+        public async Task<StudentDeleteCommand> HandleAsync(StudentDeleteQuery message, CancellationToken token) => await _db
             .Students
             .Where(s => s.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
+            .ProjectTo<StudentDeleteCommand>(_configuration)
             .SingleOrDefaultAsync(token);
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : ICommandHandler<StudentDeleteCommand>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task HandleAsync(Command message, CancellationToken token)
+        public async Task HandleAsync(StudentDeleteCommand message, CancellationToken token)
         {
             _db.Students.Remove(await _db.Students.FindAsync(message.Id));
         }

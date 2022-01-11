@@ -26,9 +26,9 @@ public class Delete : PageModel
     }
 
     [BindProperty]
-    public Command Data { get; set; }
+    public CourseDeleteCommand Data { get; set; }
 
-    public async Task OnGetAsync(Query query) => Data = await _queryProcessor.ProcessAsync(query);
+    public async Task OnGetAsync(CourseDeleteQuery query) => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -37,12 +37,12 @@ public class Delete : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IQuery<Command>
+    public record CourseDeleteQuery : IQuery<CourseDeleteCommand>
     {
         public int? Id { get; init; }
     }
 
-    public class QueryValidator : AbstractValidator<Query>
+    public class QueryValidator : AbstractValidator<CourseDeleteQuery>
     {
         public QueryValidator()
         {
@@ -52,10 +52,10 @@ public class Delete : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() => CreateProjection<Course, Command>();
+        public MappingProfile() => CreateProjection<Course, CourseDeleteCommand>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<CourseDeleteQuery, CourseDeleteCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -66,14 +66,14 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public Task<Command> HandleAsync(Query message, CancellationToken token) =>
+        public Task<CourseDeleteCommand> HandleAsync(CourseDeleteQuery message, CancellationToken token) =>
             _db.Courses
                 .Where(c => c.Id == message.Id)
-                .ProjectTo<Command>(_configuration)
+                .ProjectTo<CourseDeleteCommand>(_configuration)
                 .SingleOrDefaultAsync(token);
     }
 
-    public record Command : ICommand
+    public record CourseDeleteCommand : ICommand
     {
         [Display(Name = "Number")]
         public int Id { get; init; }
@@ -84,13 +84,13 @@ public class Delete : PageModel
         public string DepartmentName { get; init; }
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : ICommandHandler<CourseDeleteCommand>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task HandleAsync(Command message, CancellationToken token)
+        public async Task HandleAsync(CourseDeleteCommand message, CancellationToken token)
         {
             var course = await _db.Courses.FindAsync(message.Id);
 

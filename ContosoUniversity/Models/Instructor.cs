@@ -30,7 +30,7 @@ public class Instructor : IEntity
     public ICollection<CourseAssignment> CourseAssignments { get; private set; } = new List<CourseAssignment>();
     public OfficeAssignment OfficeAssignment { get; private set; }
 
-    public void Handle(CreateEdit.Command message,
+    public void Handle(CreateEdit.InstructorCreateEditCommand message,
         IEnumerable<Course> courses)
     {
         UpdateDetails(message);
@@ -38,9 +38,9 @@ public class Instructor : IEntity
         UpdateInstructorCourses(message.SelectedCourses, courses);
     }
 
-    public void Handle(Delete.Command message) => OfficeAssignment = null;
+    public void Handle(Delete.InstructorDeleteCommand message) => OfficeAssignment = null;
 
-    private void UpdateDetails(CreateEdit.Command message)
+    private void UpdateDetails(CreateEdit.InstructorCreateEditCommand message)
     {
         FirstMidName = message.FirstMidName;
         LastName = message.LastName;

@@ -22,7 +22,7 @@ public class CreateEdit : PageModel
     private readonly IQueryProcessor _queryProcessor;
 
     [BindProperty]
-    public Command Data { get; set; }
+    public InstructorCreateEditCommand Data { get; set; }
 
     public CreateEdit(ICommandProcessor commandProcessor, IQueryProcessor queryProcessor)
     {
@@ -30,7 +30,7 @@ public class CreateEdit : PageModel
         _queryProcessor = queryProcessor;
     }
 
-    public async Task OnGetCreateAsync() => Data = await _queryProcessor.ProcessAsync(new Query());
+    public async Task OnGetCreateAsync() => Data = await _queryProcessor.ProcessAsync(new InstructorCreateEditQuery());
 
     public async Task<IActionResult> OnPostCreateAsync()
     {
@@ -39,7 +39,7 @@ public class CreateEdit : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public async Task OnGetEditAsync(Query query) => Data = await _queryProcessor.ProcessAsync(query);
+    public async Task OnGetEditAsync(InstructorCreateEditQuery query) => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<IActionResult> OnPostEditAsync()
     {
@@ -48,12 +48,12 @@ public class CreateEdit : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IQuery<Command>
+    public record InstructorCreateEditQuery : IQuery<InstructorCreateEditCommand>
     {
         public int? Id { get; init; }
     }
 
-    public class QueryValidator : AbstractValidator<Query>
+    public class QueryValidator : AbstractValidator<InstructorCreateEditQuery>
     {
         public QueryValidator()
         {
@@ -61,9 +61,9 @@ public class CreateEdit : PageModel
         }
     }
 
-    public record Command : ICommand<int>
+    public record InstructorCreateEditCommand : ICommand<int>
     {
-        public Command()
+        public InstructorCreateEditCommand()
         {
             AssignedCourses = new List<AssignedCourseData>();
             CourseAssignments = new List<CourseAssignment>();
@@ -100,7 +100,7 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class CommandValidator : AbstractValidator<Command>
+    public class CommandValidator : AbstractValidator<InstructorCreateEditCommand>
     {
         public CommandValidator()
         {
@@ -114,14 +114,14 @@ public class CreateEdit : PageModel
     {
         public MappingProfile()
         {
-            CreateProjection<Instructor, Command>()
+            CreateProjection<Instructor, InstructorCreateEditCommand>()
                 .ForMember(d => d.SelectedCourses, opt => opt.Ignore())
                 .ForMember(d => d.AssignedCourses, opt => opt.Ignore());
-            CreateProjection<CourseAssignment, Command.CourseAssignment>();
+            CreateProjection<CourseAssignment, InstructorCreateEditCommand.CourseAssignment>();
         }
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<InstructorCreateEditQuery, InstructorCreateEditCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -132,23 +132,23 @@ public class CreateEdit : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> HandleAsync(Query message, CancellationToken token)
+        public async Task<InstructorCreateEditCommand> HandleAsync(InstructorCreateEditQuery message, CancellationToken token)
         {
-            Command model;
+            InstructorCreateEditCommand model;
             if (message.Id == null)
             {
-                model = new Command();
+                model = new InstructorCreateEditCommand();
             }
             else
             {
                 model = await _db.Instructors
                     .Where(i => i.Id == message.Id)
-                    .ProjectTo<Command>(_configuration)
+                    .ProjectTo<InstructorCreateEditCommand>(_configuration)
                     .SingleOrDefaultAsync(token);
             }
 
             var instructorCourses = new HashSet<int>(model.CourseAssignments.Select(c => c.CourseId));
-            var viewModel = _db.Courses.Select(course => new Command.AssignedCourseData
+            var viewModel = _db.Courses.Select(course => new InstructorCreateEditCommand.AssignedCourseData
             {
                 CourseId = course.Id,
                 Title = course.Title,
@@ -161,13 +161,13 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class CommandHandler : ICommandHandler<Command, int>
+    public class CommandHandler : ICommandHandler<InstructorCreateEditCommand, int>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task<int> HandleAsync(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(InstructorCreateEditCommand message, CancellationToken token)
         {
             Instructor instructor;
             if (message.Id == null)

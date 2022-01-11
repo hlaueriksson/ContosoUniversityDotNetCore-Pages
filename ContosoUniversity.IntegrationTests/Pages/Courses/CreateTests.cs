@@ -20,7 +20,7 @@ public class CreateTests
     [Fact]
     public async Task Should_create_new_course()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -35,12 +35,12 @@ public class CreateTests
             StartDate = DateTime.Today
         };
 
-        Create.Command command = null;
+        Create.CourseCreateCommand command = null;
 
         await _fixture.ExecuteDbContextAsync(async (ctxt, processor) =>
         {
             await ctxt.Departments.AddAsync(dept);
-            command = new Create.Command
+            command = new Create.CourseCreateCommand
             {
                 Credits = 4,
                 Department = dept,

@@ -19,7 +19,7 @@ public class DetailsTests
     [Fact]
     public async Task Should_get_details()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -52,7 +52,7 @@ public class DetailsTests
         };
         await _fixture.InsertAsync(course1, course2);
 
-        var command = new Create.Command
+        var command = new Create.StudentCreateCommand
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
@@ -74,7 +74,7 @@ public class DetailsTests
         };
         await _fixture.InsertAsync(enrollment1, enrollment2);
 
-        var details = await _fixture.ProcessAsync(new Details.Query {Id = studentId});
+        var details = await _fixture.ProcessAsync(new Details.StudentDetailsQuery {Id = studentId});
 
         details.ShouldNotBeNull();
         details.FirstMidName.ShouldBe(command.FirstMidName);

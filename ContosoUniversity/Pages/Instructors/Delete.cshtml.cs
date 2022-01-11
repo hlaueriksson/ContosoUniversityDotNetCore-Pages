@@ -27,9 +27,9 @@ public class Delete : PageModel
     }
 
     [BindProperty]
-    public Command Data { get; set; }
+    public InstructorDeleteCommand Data { get; set; }
 
-    public async Task OnGetAsync(Query query)
+    public async Task OnGetAsync(InstructorDeleteQuery query)
         => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<ActionResult> OnPostAsync()
@@ -39,12 +39,12 @@ public class Delete : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IQuery<Command>
+    public record InstructorDeleteQuery : IQuery<InstructorDeleteCommand>
     {
         public int? Id { get; init; }
     }
 
-    public class Validator : AbstractValidator<Query>
+    public class Validator : AbstractValidator<InstructorDeleteQuery>
     {
         public Validator()
         {
@@ -52,7 +52,7 @@ public class Delete : PageModel
         }
     }
 
-    public record Command : ICommand
+    public record InstructorDeleteCommand : ICommand
     {
         public int? Id { get; init; }
 
@@ -69,10 +69,10 @@ public class Delete : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() => CreateProjection<Instructor, Command>();
+        public MappingProfile() => CreateProjection<Instructor, InstructorDeleteCommand>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<InstructorDeleteQuery, InstructorDeleteCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -83,20 +83,20 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public Task<Command> HandleAsync(Query message, CancellationToken token) => _db
+        public Task<InstructorDeleteCommand> HandleAsync(InstructorDeleteQuery message, CancellationToken token) => _db
             .Instructors
             .Where(i => i.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
+            .ProjectTo<InstructorDeleteCommand>(_configuration)
             .SingleOrDefaultAsync(token);
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : ICommandHandler<InstructorDeleteCommand>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task HandleAsync(Command message, CancellationToken token)
+        public async Task HandleAsync(InstructorDeleteCommand message, CancellationToken token)
         {
             var instructor = await _db.Instructors
                 .Include(i => i.OfficeAssignment)

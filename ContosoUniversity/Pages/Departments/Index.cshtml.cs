@@ -22,9 +22,9 @@ public class Index : PageModel
     public List<Model> Data { get; private set; }
 
     public async Task OnGetAsync()
-        => Data = await _queryProcessor.ProcessAsync(new Query());
+        => Data = await _queryProcessor.ProcessAsync(new DepartmentIndexQuery());
 
-    public record Query : IQuery<List<Model>>
+    public record DepartmentIndexQuery : IQuery<List<Model>>
     {
     }
 
@@ -46,7 +46,7 @@ public class Index : PageModel
         public MappingProfile() => CreateProjection<Department, Model>();
     }
 
-    public class QueryHandler : IQueryHandler<Query, List<Model>>
+    public class QueryHandler : IQueryHandler<DepartmentIndexQuery, List<Model>>
     {
         private readonly SchoolContext _context;
         private readonly IConfigurationProvider _configuration;
@@ -58,7 +58,7 @@ public class Index : PageModel
             _configuration = configuration;
         }
 
-        public Task<List<Model>> HandleAsync(Query message, 
+        public Task<List<Model>> HandleAsync(DepartmentIndexQuery message, 
             CancellationToken token) => _context
             .Departments
             .ProjectTo<Model>(_configuration)

@@ -17,7 +17,7 @@ public class CreateTests
     [Fact]
     public async Task Should_create_student()
     {
-        var cmd = new Create.Command
+        var cmd = new Create.StudentCreateCommand
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",

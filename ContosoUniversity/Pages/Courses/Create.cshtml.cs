@@ -15,7 +15,7 @@ public class Create : PageModel
     public Create(ICommandProcessor commandProcessor) => _commandProcessor = commandProcessor;
 
     [BindProperty]
-    public Command Data { get; set; }
+    public CourseCreateCommand Data { get; set; }
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -24,7 +24,7 @@ public class Create : PageModel
         return this.RedirectToPageJson("Index");
     }
 
-    public record Command : ICommand<int>
+    public record CourseCreateCommand : ICommand<int>
     {
         public int Number { get; init; }
         public string Title { get; init; }
@@ -32,13 +32,13 @@ public class Create : PageModel
         public Department Department { get; init; }
     }
 
-    public class Handler : ICommandHandler<Command, int>
+    public class Handler : ICommandHandler<CourseCreateCommand, int>
     {
         private readonly SchoolContext _db;
 
         public Handler(SchoolContext db) => _db = db;
 
-        public async Task<int> HandleAsync(Command message, CancellationToken token)
+        public async Task<int> HandleAsync(CourseCreateCommand message, CancellationToken token)
         {
             var course = new Course
             {

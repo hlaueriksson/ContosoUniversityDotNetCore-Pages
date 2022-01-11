@@ -20,7 +20,7 @@ public class Edit : PageModel
     private readonly IQueryProcessor _queryProcessor;
 
     [BindProperty]
-    public Command Data { get; set; }
+    public CourseEditCommand Data { get; set; }
 
     public Edit(ICommandProcessor commandProcessor, IQueryProcessor queryProcessor)
     {
@@ -28,7 +28,7 @@ public class Edit : PageModel
         _queryProcessor = queryProcessor;
     }
 
-    public async Task OnGetAsync(Query query) => Data = await _queryProcessor.ProcessAsync(query);
+    public async Task OnGetAsync(CourseEditQuery query) => Data = await _queryProcessor.ProcessAsync(query);
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -37,12 +37,12 @@ public class Edit : PageModel
         return this.RedirectToPageJson(nameof(Index));
     }
 
-    public record Query : IQuery<Command>
+    public record CourseEditQuery : IQuery<CourseEditCommand>
     {
         public int? Id { get; init; }
     }
 
-    public class QueryValidator : AbstractValidator<Query>
+    public class QueryValidator : AbstractValidator<CourseEditQuery>
     {
         public QueryValidator()
         {
@@ -50,7 +50,7 @@ public class Edit : PageModel
         }
     }
 
-    public class QueryHandler : IQueryHandler<Query, Command>
+    public class QueryHandler : IQueryHandler<CourseEditQuery, CourseEditCommand>
     {
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
@@ -61,14 +61,14 @@ public class Edit : PageModel
             _configuration = configuration;
         }
 
-        public Task<Command> HandleAsync(Query message, CancellationToken token) =>
+        public Task<CourseEditCommand> HandleAsync(CourseEditQuery message, CancellationToken token) =>
             _db.Courses
                 .Where(c => c.Id == message.Id)
-                .ProjectTo<Command>(_configuration)
+                .ProjectTo<CourseEditCommand>(_configuration)
                 .SingleOrDefaultAsync(token);
     }
 
-    public record Command : ICommand
+    public record CourseEditCommand : ICommand
     {
         [Display(Name = "Number")]
         public int Id { get; init; }
@@ -79,10 +79,10 @@ public class Edit : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() => CreateProjection<Course, Command>();
+        public MappingProfile() => CreateProjection<Course, CourseEditCommand>();
     }
 
-    public class CommandValidator : AbstractValidator<Command>
+    public class CommandValidator : AbstractValidator<CourseEditCommand>
     {
         public CommandValidator()
         {
@@ -91,13 +91,13 @@ public class Edit : PageModel
         }
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : ICommandHandler<CourseEditCommand>
     {
         private readonly SchoolContext _db;
 
         public CommandHandler(SchoolContext db) => _db = db;
 
-        public async Task HandleAsync(Command request, CancellationToken cancellationToken)
+        public async Task HandleAsync(CourseEditCommand request, CancellationToken cancellationToken)
         {
             var course = await _db.Courses.FindAsync(request.Id);
 

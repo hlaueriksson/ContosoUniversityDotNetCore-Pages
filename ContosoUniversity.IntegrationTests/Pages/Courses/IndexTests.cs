@@ -20,7 +20,7 @@ public class IndexTests
     public async Task Should_return_all_courses()
     {
         var adminId = await _fixture.ProcessAsync(
-            new ContosoUniversity.Pages.Instructors.CreateEdit.Command
+            new ContosoUniversity.Pages.Instructors.CreateEdit.InstructorCreateEditCommand
             {
                 FirstMidName = "George",
                 LastName = "Jones",
@@ -62,7 +62,7 @@ public class IndexTests
             english, 
             history);
 
-        var result = await _fixture.ProcessAsync(new Index.Query());
+        var result = await _fixture.ProcessAsync(new Index.CourseIndexQuery());
 
         result.ShouldNotBeNull();
         result.Courses.Count.ShouldBeGreaterThanOrEqualTo(2);

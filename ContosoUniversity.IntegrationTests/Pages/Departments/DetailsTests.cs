@@ -18,7 +18,7 @@ public class DetailsTests
     [Fact]
     public async Task Should_get_department_details()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -34,7 +34,7 @@ public class DetailsTests
         };
         await _fixture.InsertAsync(dept);
 
-        var query = new Details.Query
+        var query = new Details.DepartmentDetailsQuery
         {
             Id = dept.Id
         };

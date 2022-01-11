@@ -20,7 +20,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_delete_department()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -36,7 +36,7 @@ public class DeleteTests
         };
         await _fixture.InsertAsync(dept);
 
-        var command = new Delete.Command
+        var command = new Delete.DepartmentDeleteCommand
         {
             Id = dept.Id,
             RowVersion = dept.RowVersion

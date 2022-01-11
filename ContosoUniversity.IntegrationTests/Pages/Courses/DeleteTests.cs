@@ -21,7 +21,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_query_for_command()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -46,7 +46,7 @@ public class DeleteTests
 
         await _fixture.InsertAsync(dept, course);
 
-        var result = await _fixture.ProcessAsync(new Delete.Query { Id = course.Id });
+        var result = await _fixture.ProcessAsync(new Delete.CourseDeleteQuery { Id = course.Id });
 
         result.ShouldNotBeNull();
         result.Credits.ShouldBe(course.Credits);
@@ -57,7 +57,7 @@ public class DeleteTests
     [Fact]
     public async Task Should_delete()
     {
-        var adminId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var adminId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -82,7 +82,7 @@ public class DeleteTests
 
         await _fixture.InsertAsync(dept, course);
 
-        await _fixture.ProcessAsync(new Delete.Command { Id = course.Id });
+        await _fixture.ProcessAsync(new Delete.CourseDeleteCommand { Id = course.Id });
 
         var result = await _fixture.ExecuteDbContextAsync(db => db.Courses.Where(c => c.Id == course.Id).SingleOrDefaultAsync());
 

@@ -31,7 +31,7 @@ public class DetailsTests
         };
         await _fixture.InsertAsync(englishDept, english101);
 
-        var command = new CreateEdit.Command
+        var command = new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -41,7 +41,7 @@ public class DetailsTests
         };
         var instructorId = await _fixture.ProcessAsync(command);
 
-        var result = await _fixture.ProcessAsync(new Details.Query { Id = instructorId });
+        var result = await _fixture.ProcessAsync(new Details.InstructorDetailsQuery { Id = instructorId });
 
         result.ShouldNotBeNull();
         result.FirstMidName.ShouldBe(command.FirstMidName);

@@ -41,7 +41,7 @@ public class CreateEditTests
 
         await _fixture.InsertAsync(englishDept, english101, english201);
 
-        var command = new CreateEdit.Command
+        var command = new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "Jerry",
             LastName = "Seinfeld",
@@ -87,7 +87,7 @@ public class CreateEditTests
 
         await _fixture.InsertAsync(englishDept, english101, english201);
 
-        var instructorId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var instructorId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -95,7 +95,7 @@ public class CreateEditTests
             HireDate = DateTime.Today
         });
 
-        var command = new CreateEdit.Command
+        var command = new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "Jerry",
             LastName = "Seinfeld",
@@ -140,7 +140,7 @@ public class CreateEditTests
         };
         await _fixture.InsertAsync(englishDept, english101, english201);
 
-        var instructorId = await _fixture.ProcessAsync(new CreateEdit.Command
+        var instructorId = await _fixture.ProcessAsync(new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "George",
             LastName = "Costanza",
@@ -149,7 +149,7 @@ public class CreateEditTests
             SelectedCourses = new[] { english101.Id.ToString() }
         });
 
-        var command = new CreateEdit.Command
+        var command = new CreateEdit.InstructorCreateEditCommand
         {
             FirstMidName = "Jerry",
             LastName = "Seinfeld",
