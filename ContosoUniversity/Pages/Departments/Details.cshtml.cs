@@ -54,9 +54,9 @@ public class Details : PageModel
         private readonly SchoolContext _context;
         private readonly IConfigurationProvider _configuration;
 
-        public QueryHandler(SchoolContext context, IConfigurationProvider configuration)
+        public QueryHandler(IDbContextFactory<SchoolContext> context, IConfigurationProvider configuration)
         {
-            _context = context;
+            _context = context.CreateDbContext();
             _configuration = configuration;
         }
 

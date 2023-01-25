@@ -1,4 +1,5 @@
-﻿using CommandQuery.DependencyInjection;
+﻿using CommandQuery;
+using CommandQuery.DependencyInjection;
 using ContosoUniversity.Data;
 using ContosoUniversity.Infrastructure;
 using ContosoUniversity.Infrastructure.Tags;
@@ -27,8 +28,11 @@ static void RegisterServices(WebApplicationBuilder builder)
 
     services.AddMiniProfiler().AddEntityFramework();
 
-    services.AddDbContext<SchoolContext>(options =>
+    services.AddDbContextFactory<SchoolContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    services.AddDbContext<SchoolContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
+        optionsLifetime: ServiceLifetime.Singleton);
 
     services.AddAutoMapper(typeof(Program));
 
@@ -66,4 +70,8 @@ static void ConfigureApplication(WebApplication app)
     app.UseAuthorization();
 
     app.MapRazorPages();
+
+    // Validation
+    app.Services.GetService<ICommandProcessor>().AssertConfigurationIsValid();
+    app.Services.GetService<IQueryProcessor>().AssertConfigurationIsValid();
 }

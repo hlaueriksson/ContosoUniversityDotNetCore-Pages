@@ -62,9 +62,9 @@ public class Details : PageModel
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
 
-        public Handler(SchoolContext db, IConfigurationProvider configuration)
+        public Handler(IDbContextFactory<SchoolContext> db, IConfigurationProvider configuration)
         {
-            _db = db;
+            _db = db.CreateDbContext();
             _configuration = configuration;
         }
 

@@ -51,10 +51,10 @@ public class Index : PageModel
         private readonly SchoolContext _context;
         private readonly IConfigurationProvider _configuration;
 
-        public QueryHandler(SchoolContext context, 
+        public QueryHandler(IDbContextFactory<SchoolContext> context, 
             IConfigurationProvider configuration)
         {
-            _context = context;
+            _context = context.CreateDbContext();
             _configuration = configuration;
         }
 

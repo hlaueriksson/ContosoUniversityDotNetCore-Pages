@@ -126,9 +126,9 @@ public class CreateEdit : PageModel
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
 
-        public QueryHandler(SchoolContext db, IConfigurationProvider configuration)
+        public QueryHandler(IDbContextFactory<SchoolContext> db, IConfigurationProvider configuration)
         {
-            _db = db;
+            _db = db.CreateDbContext();
             _configuration = configuration;
         }
 
@@ -165,7 +165,7 @@ public class CreateEdit : PageModel
     {
         private readonly SchoolContext _db;
 
-        public CommandHandler(SchoolContext db) => _db = db;
+        public CommandHandler(IDbContextFactory<SchoolContext> db) => _db = db.CreateDbContext();
 
         public async Task<int> HandleAsync(InstructorCreateEditCommand message, CancellationToken token)
         {

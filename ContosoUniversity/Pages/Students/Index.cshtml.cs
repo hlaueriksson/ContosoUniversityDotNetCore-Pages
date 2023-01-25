@@ -9,6 +9,7 @@ using CommandQuery;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Pages.Students;
 
@@ -63,9 +64,9 @@ public class Index : PageModel
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
 
-        public QueryHandler(SchoolContext db, IConfigurationProvider configuration)
+        public QueryHandler(IDbContextFactory<SchoolContext> db, IConfigurationProvider configuration)
         {
-            _db = db;
+            _db = db.CreateDbContext();
             _configuration = configuration;
         }
 

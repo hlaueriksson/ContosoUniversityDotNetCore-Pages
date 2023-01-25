@@ -8,6 +8,7 @@ using ContosoUniversity.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Pages.Students;
 
@@ -53,7 +54,7 @@ public class Create : PageModel
     {
         private readonly SchoolContext _db;
 
-        public Handler(SchoolContext db) => _db = db;
+        public Handler(IDbContextFactory<SchoolContext> db) => _db = db.CreateDbContext();
 
         public async Task<int> HandleAsync(StudentCreateCommand message, CancellationToken token)
         {

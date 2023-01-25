@@ -9,6 +9,7 @@ using ContosoUniversity.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Pages.Departments;
 
@@ -59,7 +60,7 @@ public class Create : PageModel
     {
         private readonly SchoolContext _context;
 
-        public CommandHandler(SchoolContext context) => _context = context;
+        public CommandHandler(IDbContextFactory<SchoolContext> context) => _context = context.CreateDbContext();
 
         public async Task<int> HandleAsync(DepartmentCreateCommand message, CancellationToken token)
         {
