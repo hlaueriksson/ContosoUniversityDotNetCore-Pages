@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="CommandQuery" Version="2.0.0" />
+    <PackageReference Include="CommandQuery" Version="3.0.0" />
     <PackageReference Include="DelegateDecompiler.EntityFrameworkCore5" Version="0.30.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="HtmlTags" Version="8.1.1" />
